@@ -9,16 +9,24 @@
 #define BUFFER_INIT_SIZE 8
 
 Buffer* make_buffer() {
-    Buffer* r = malloc(sizeof(Buffer));
-    r->body = malloc(BUFFER_INIT_SIZE);
-    r->nalloc = BUFFER_INIT_SIZE;
-    r->len = 0;
-    return r;
+    Buffer* bufMem = malloc(sizeof(Buffer));
+    if (bufMem == NULL) return NULL;
+
+    void* bodyMem = malloc(BUFFER_INIT_SIZE);
+    if (bodyMem == NULL) {
+        free(bufMem);
+        return NULL;
+    }
+    bufMem->body = bodyMem;
+    bufMem->nalloc = BUFFER_INIT_SIZE;
+    bufMem->len = 0;
+    return bufMem;
 }
 
 static void realloc_body(Buffer* b) {
     int newsize = b->nalloc * 2;
     char* body = malloc(newsize);
+    if (body == NULL) return NULL;
     memcpy(body, b->body, b->len);
     b->body = body;
     b->nalloc = newsize;
@@ -86,13 +94,13 @@ char* format(char* fmt, ...) {
 
 static char* quote(char c) {
     switch (c) {
-    case '"': return "\\\"";
-    case '\\': return "\\\\";
-    case '\b': return "\\b";
-    case '\f': return "\\f";
-    case '\n': return "\\n";
-    case '\r': return "\\r";
-    case '\t': return "\\t";
+        case '"': return "\\\"";
+        case '\\': return "\\\\";
+        case '\b': return "\\b";
+        case '\f': return "\\f";
+        case '\n': return "\\n";
+        case '\r': return "\\r";
+        case '\t': return "\\t";
     }
     return NULL;
 }
@@ -104,11 +112,11 @@ static void print(Buffer* b, char c) {
     } else if (isprint(c)) {
         buf_printf(b, "%c", c);
     } else {
-        #ifdef __eir__
+#ifdef __eir__
         buf_printf(b, "\\x%x", c);
-        #else
+#else
         buf_printf(b, "\\x%02x", ((int)c) & 255);
-        #endif
+#endif
     }
 }
 

@@ -26,7 +26,7 @@ Buffer* make_buffer() {
 static void realloc_body(Buffer* b) {
     int newsize = b->nalloc * 2;
     char* body = malloc(newsize);
-    if (body == NULL) return NULL;
+    if (body == NULL) return;
     memcpy(body, b->body, b->len);
     b->body = body;
     b->nalloc = newsize;

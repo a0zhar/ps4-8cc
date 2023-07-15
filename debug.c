@@ -29,9 +29,9 @@ static char* do_ty2s(Dict* dict, Type* ty) {
         return format("[%d]%s", ty->len, do_ty2s(dict, ty->ptr));
     case KIND_STRUCT: {
         char* kind = ty->is_struct ? "struct" : "union";
-        if (dict_get(dict, format("%p", ty)))
+        if (dict_get(dict, (void*)ty))
             return format("(%s)", kind);
-        dict_put(dict, format("%p", ty), (void*)1);
+        dict_put(dict, (void*)ty, (void*)1);
         if (ty->fields) {
             Buffer* b = make_buffer();
             buf_printf(b, "(%s", kind);
